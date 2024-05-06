@@ -1,6 +1,8 @@
 import React from "react";
 import "./styles/App.css"
 import AllPosts from "./Componets/AllPosts";
+import MyButton from "./Componets/UI/button/MyButton";
+import MyInput from "./Componets/UI/input/MyInput";
 
 function App() {
     const [posts, setPosts] = React.useState([
@@ -9,18 +11,38 @@ function App() {
         {id: 3, title: 'C++', description: 'You lost 2gb or RAM because of carelessness'}
     ]);
 
-    const [posts2, setPosts2] = React.useState([
-        {id: 1, title: 'Nothing', description: 'Nothing'},
-        {id: 2, title: 'Nothing', description: 'Nothing'},
-        {id: 3, title: 'Nothing', description: 'Nothing'}
-    ]);
+    const [title, setTitle] = React.useState('');
 
-    console.log(posts);
-    console.log(typeof posts);
+    const [description, setDescription] = React.useState('');
+
+    const addPost = () => {
+        const newPost = {
+            id: Date.now(),
+            title,
+            description
+        }
+        setPosts([...posts, newPost])
+
+        setTitle('')
+        setDescription('')
+    }
+
     return (
         <div className="App">
-            <AllPosts posts={posts} title={"Posts about programming languages"} />
-            <AllPosts posts={posts2} title={"Posts about nothing"} />
+            <MyInput
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                type="text"
+                placeholder="Введите заголовок новой записи"
+            />
+            <MyInput
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                type="text"
+                placeholder="Введите текст новой записи"
+            />
+            <MyButton onClick={addPost}>Записать</MyButton>
+            <AllPosts posts={posts} title={"Записи:"}/>
         </div>
     );
 }

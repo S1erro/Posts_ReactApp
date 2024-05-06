@@ -4,13 +4,13 @@ const Post = (props) => {
     return (
         <div className="post">
             <div className="post__cont">
-                <h2>{props.post.id}. {props.post.title}</h2>
+                <h2>{props.id}. {props.post.title}</h2>
                 <div>
                     {props.post.description}
                 </div>
             </div>
             <div className="post__buttons">
-                <button>Delete</button>
+                <button>Удалить</button>
             </div>
         </div>
     );
