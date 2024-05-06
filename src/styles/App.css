@@ -1,0 +1,34 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+    background-color: #e4f5ff;
+}
+
+#root {
+    display: flex;
+    justify-content: center;
+}
+
+.App {
+    width: 1000px;
+}
+
+.App__header {
+    text-align: center;
+}
+
+.post {
+    padding: 10px;
+    margin: 20px;
+    border: cadetblue solid 2px;
+}
+
+.post__buttons {
+    margin-top: 20px;
+}
+
+button {
+    padding: 5px;
+}
