@@ -1,8 +1,9 @@
 import React from "react";
 import "./styles/App.css"
 import AllPosts from "./Componets/AllPosts";
-import MyButton from "./Componets/UI/button/MyButton";
-import MyInput from "./Componets/UI/input/MyInput";
+// import MyButton from "./Componets/UI/button/MyButton";
+// import MyInput from "./Componets/UI/input/MyInput";
+import PostForm from "./Componets/PostForm";
 
 function App() {
     // Хранит все посты на странице
@@ -12,39 +13,14 @@ function App() {
         {id: 3, title: 'C++', description: 'You lost 2gb or RAM because of carelessness'}
     ]);
 
-    // Состояние двух input (какие данные введены в строки)
-    const [post, setPost] = React.useState({title: '', description: ''});
-
-    // Добавление нового поста
-    const addPost = (e) => {
-        e.preventDefault()
-        const newPost = {
-            id: Date.now(),
-            ...post
-        }
+    const createInput = (newPost) => {
         setPosts([...posts, newPost])
-        //setPosts([...posts, {...post, id: Date.now()}])
-        setPost({...post, title: '', description: ''})
     }
 
     return (
         <div className="App">
-            <form>
-                <MyInput
-                    value={post.title}
-                    onChange={(e) => setPost({...post, title: e.target.value})}
-                    type="text"
-                    placeholder="Введите заголовок новой записи"
-                />
-                <MyInput
-                    value={post.description}
-                    onChange={(e) => setPost({...post, description: e.target.value})}
-                    type="text"
-                    placeholder="Введите текст новой записи"
-                />
-                <MyButton onClick={addPost}>Записать</MyButton>
-                <AllPosts posts={posts} title={"Записи:"}/>
-            </form>
+            <PostForm createInput={createInput}/>
+            <AllPosts posts={posts} title={"Записи:"}/>
         </div>
     );
 }
