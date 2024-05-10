@@ -2,7 +2,7 @@ import React from 'react';
 import MyInput from "./UI/input/MyInput";
 import MyButton from "./UI/button/MyButton";
 
-const PostForm = ({createInput}) => {
+const PostForm = ({createPost}) => {
     // Состояние двух input (какие данные введены в строки)
     const [post, setPost] = React.useState({title: '', description: ''});
 
@@ -13,7 +13,7 @@ const PostForm = ({createInput}) => {
             id: Date.now(),
             ...post
         }
-        createInput(newPost);
+        createPost(newPost);
         setPost({...post, title: '', description: ''})
     }
 
