@@ -1,9 +1,10 @@
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import "./styles/App.css"
 import AllPosts from "./Componets/AllPosts";
 import PostForm from "./Componets/PostForm";
-import MySelect from "./Componets/UI/select/MySelect";
-import MyInput from "./Componets/UI/input/MyInput";
+import PostFilter from "./Componets/PostFilter";
+import MyModal from "./Componets/UI/MyModal/MyModal";
+import MyButton from "./Componets/UI/button/MyButton";
 
 function App() {
     // Хранит все посты на странице
@@ -12,23 +13,24 @@ function App() {
         {id: 2, title: 'Python', description: 'Best times in my life'},
         {id: 3, title: 'C++', description: 'You lost 2gb or RAM because of carelessness'}
     ]);
-    const [selectedSort, setSelectedSort] = React.useState('')
-    const [searchQuery, setSearchQuery] = React.useState('');
+    const [filter, setFilter] = useState({sort: '', query: ''})
+    const [modal, setModal] = useState(false)
 
     const sortedPosts = useMemo(() => {
         console.log('работает вроде')
-        if(selectedSort) {
-            return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+        if(filter.sort) {
+            return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
         }
         return posts;
-    }, [selectedSort, posts])
+    }, [filter.sort, posts])
 
     const sortedAndSearchedPosts = useMemo(() => {
-        return sortedPosts.filter(post => post.title.toLowerCase().includes(searchQuery))
-    }, [searchQuery, sortedPosts])
+        return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query))
+    }, [filter.query, sortedPosts])
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost])
+        setModal(false)
     }
 
     // Получаем id поста для удаления из дочернего компонента
@@ -36,34 +38,20 @@ function App() {
         setPosts(posts.filter(p => p.id !== id))
     }
 
-    const sortPosts = (sort) => { //sort - параметр, по которому сортируем посты
-        setSelectedSort(sort)
-    }
-
     return (
         <div className="App">
-            <PostForm createPost={createPost}/>
+            <MyButton style={{marginTop: 30}} onClick={() => setModal(true)}>
+                Создать пост
+            </MyButton>
+            <MyModal visible={modal} setVisible={setModal}>
+                <PostForm createPost={createPost}/>
+            </MyModal>
             <hr style={{margin: "10px 0"}}/>
-            <div>
-                <MyInput
-                    value={searchQuery}
-                    onChange={(e) => {setSearchQuery(e.target.value)}}
-                    placeholder="Поиск"
-                />
-                <MySelect
-                    value={selectedSort}
-                    onChange={sortPosts}
-                    sortOptions={[
-                        {value: 'title', name: 'По названию'},
-                        {value: 'description', name: 'По описанию'}
-                    ]}
-                    defaultValue="Сортировка"
-                />
-            </div>
-            {sortedAndSearchedPosts.length > 0
-                ? <AllPosts posts={sortedAndSearchedPosts} title={"Записи:"} deletePost={deletePost}/>
-                : <h1 style={{textAlign: "center"}}>Посты не найдены</h1>
-            }
+            <PostFilter
+                filter={filter}
+                setFilter={setFilter}
+            />
+            <AllPosts posts={sortedAndSearchedPosts} title={"Записи:"} deletePost={deletePost}/>
         </div>
     );
 }
