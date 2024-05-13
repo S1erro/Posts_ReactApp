@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import "./styles/App.css"
 import AllPosts from "./Componets/AllPosts";
 import PostForm from "./Componets/PostForm";
@@ -12,10 +12,20 @@ function App() {
         {id: 2, title: 'Python', description: 'Best times in my life'},
         {id: 3, title: 'C++', description: 'You lost 2gb or RAM because of carelessness'}
     ]);
-
     const [selectedSort, setSelectedSort] = React.useState('')
-
     const [searchQuery, setSearchQuery] = React.useState('');
+
+    const sortedPosts = useMemo(() => {
+        console.log('работает вроде')
+        if(selectedSort) {
+            return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+        }
+        return posts;
+    }, [selectedSort, posts])
+
+    const sortedAndSearchedPosts = useMemo(() => {
+        return sortedPosts.filter(post => post.title.toLowerCase().includes(searchQuery))
+    }, [searchQuery, sortedPosts])
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost])
@@ -26,9 +36,8 @@ function App() {
         setPosts(posts.filter(p => p.id !== id))
     }
 
-    const sortPosts = (sort) => {
+    const sortPosts = (sort) => { //sort - параметр, по которому сортируем посты
         setSelectedSort(sort)
-        setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])))
     }
 
     return (
@@ -39,7 +48,6 @@ function App() {
                 <MyInput
                     value={searchQuery}
                     onChange={(e) => {setSearchQuery(e.target.value)}}
-                    className={MyInput}
                     placeholder="Поиск"
                 />
                 <MySelect
@@ -52,9 +60,9 @@ function App() {
                     defaultValue="Сортировка"
                 />
             </div>
-            {posts.length > 0
-                ? <AllPosts posts={posts} title={"Записи:"} deletePost={deletePost}/>
-                : <h1 style={{textAlign: "center"}}>Нет ни одной записи...</h1>
+            {sortedAndSearchedPosts.length > 0
+                ? <AllPosts posts={sortedAndSearchedPosts} title={"Записи:"} deletePost={deletePost}/>
+                : <h1 style={{textAlign: "center"}}>Посты не найдены</h1>
             }
         </div>
     );
