@@ -4,7 +4,7 @@ import MyButton from "./UI/button/MyButton";
 
 const PostForm = ({createPost}) => {
     // Состояние двух input (какие данные введены в строки)
-    const [post, setPost] = React.useState({title: '', description: ''});
+    const [post, setPost] = React.useState({title: '', body: ''});
 
     // Добавление нового поста
     const addPost = (e) => {
@@ -14,7 +14,7 @@ const PostForm = ({createPost}) => {
             ...post
         }
         createPost(newPost);
-        setPost({...post, title: '', description: ''})
+        setPost({...post, title: '', body: ''})
     }
 
     return (
@@ -27,8 +27,8 @@ const PostForm = ({createPost}) => {
                 placeholder="Введите заголовок новой записи"
             />
             <MyInput
-                value={post.description}
-                onChange={(e) => setPost({...post, description: e.target.value})}
+                value={post.body}
+                onChange={(e) => setPost({...post, body: e.target.value})}
                 type="text"
                 placeholder="Введите текст новой записи"
             />

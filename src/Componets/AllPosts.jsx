@@ -22,7 +22,7 @@ const AllPosts = ({posts, title = "Post list", deletePost}) => {
                         timeout={500}
                         classNames="post"
                     >
-                        <Post id={number + 1} post={post} key={post.id} deletePost={deletePost}/>
+                        <Post id={number + 1} post={post} deletePost={deletePost}/>
                     </CSSTransition>
                 )}
             </TransitionGroup>

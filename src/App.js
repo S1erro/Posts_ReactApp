@@ -1,32 +1,38 @@
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./styles/App.css"
 import AllPosts from "./Componets/AllPosts";
 import PostForm from "./Componets/PostForm";
 import PostFilter from "./Componets/PostFilter";
 import MyModal from "./Componets/UI/MyModal/MyModal";
 import MyButton from "./Componets/UI/button/MyButton";
+import {usePosts} from "./hooks/usePosts";
+import PostService from "./API/PostService";
+import Loader from "./Componets/UI/Loader/Loader";
+import {useFetching} from "./hooks/useFetching";
+import {getPageCount, getPagesArray} from "./utils/pages";
 
 function App() {
     // Хранит все посты на странице
-    const [posts, setPosts] = React.useState([
-        {id: 1, title: 'Javascript', description: 'This language is not as easy as I thought it would be.....'},
-        {id: 2, title: 'Python', description: 'Best times in my life'},
-        {id: 3, title: 'C++', description: 'You lost 2gb or RAM because of carelessness'}
-    ]);
+    const [posts, setPosts] = React.useState([])
     const [filter, setFilter] = useState({sort: '', query: ''})
     const [modal, setModal] = useState(false)
+    const [totalPages, setTotalPages] = useState(0)
+    const [limit, setLimit] = useState(10)
+    const [page, setPage] = useState(1)
+    const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+    let pagesArray = getPagesArray(totalPages)
 
-    const sortedPosts = useMemo(() => {
-        console.log('работает вроде')
-        if(filter.sort) {
-            return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
-        }
-        return posts;
-    }, [filter.sort, posts])
+    const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+        const response = await PostService.getAll(limit, page)
+        setPosts(response.data)
+        const totalCount = response.headers['x-total-count']
+        setTotalPages(getPageCount(totalCount, limit))
+    })
 
-    const sortedAndSearchedPosts = useMemo(() => {
-        return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query))
-    }, [filter.query, sortedPosts])
+
+    useEffect(() => {
+        fetchPosts()
+    }, []);
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost])
@@ -36,6 +42,11 @@ function App() {
     // Получаем id поста для удаления из дочернего компонента
     const deletePost = (id) => {
         setPosts(posts.filter(p => p.id !== id))
+    }
+
+    const changePage = (page) => {
+        setPage(page)
+        fetchPosts()
     }
 
     return (
@@ -51,7 +62,24 @@ function App() {
                 filter={filter}
                 setFilter={setFilter}
             />
-            <AllPosts posts={sortedAndSearchedPosts} title={"Записи:"} deletePost={deletePost}/>
+            {postError &&
+                <h1>Произошла ошибка ${postError}</h1>
+            }
+            {isPostsLoading
+                ?   <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
+                :   <AllPosts posts={sortedAndSearchedPosts} title={"Записи:"} deletePost={deletePost}/>
+            }
+            <div className="page__wrapper">
+                {pagesArray.map(p =>
+                    <span
+                        onClick={() => changePage(p)}
+                        key={p}
+                        className={page === p ? 'page page__current' : 'page'}
+                    >
+                        {p}
+                    </span>
+                )}
+            </div>
         </div>
     );
 }

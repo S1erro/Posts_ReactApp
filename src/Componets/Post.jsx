@@ -8,7 +8,7 @@ const Post = (props) => {
             <div className="post__cont">
                 <h2>{props.id}. {props.post.title}</h2>
                 <div>
-                    {props.post.description}
+                    {props.post.body}
                 </div>
             </div>
             <div className="post__buttons">
